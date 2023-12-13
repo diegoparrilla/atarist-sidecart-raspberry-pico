@@ -41,6 +41,7 @@ target_sources(${PROJECT_NAME} PRIVATE constants.c)
 target_sources(${PROJECT_NAME} PRIVATE firmware.c)
 target_sources(${PROJECT_NAME} PRIVATE firmware_floppyemul.c)
 target_sources(${PROJECT_NAME} PRIVATE firmware_rtcemul.c)
+target_sources(${PROJECT_NAME} PRIVATE firmware_gemdrvemul.c)
 target_sources(${PROJECT_NAME} PRIVATE romemul.c)
 target_sources(${PROJECT_NAME} PRIVATE floppyemul.c)
 target_sources(${PROJECT_NAME} PRIVATE romloader.c)
@@ -49,6 +50,7 @@ target_sources(${PROJECT_NAME} PRIVATE config.c)
 target_sources(${PROJECT_NAME} PRIVATE network.c)
 target_sources(${PROJECT_NAME} PRIVATE filesys.c)
 target_sources(${PROJECT_NAME} PRIVATE rtcemul.c)
+target_sources(${PROJECT_NAME} PRIVATE gemdrvemul.c)
 target_sources(${PROJECT_NAME} PRIVATE cJSON/cJSON.c)
 
 # Tell CMake where to find other source code
@@ -66,10 +68,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 #        pico_multicore                # for multicore functionality
         pico_lwip_http
         )
-
-# Debug outputs
-pico_enable_stdio_usb(${PROJECT_NAME} 0)
-pico_enable_stdio_uart(${PROJECT_NAME} _DEBUG)
 
 # Link custom memmap with reserved memory for ROMs
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -124,7 +122,17 @@ if(NOT RELEASE_DATE)
 endif()
 
 if (NOT _DEBUG)
-        set(_DEBUG 0)
+        set(_DEBUG 1)
+endif()
+
+
+# Debug outputs
+pico_enable_stdio_usb(${PROJECT_NAME} 0)
+# Workaround to disable USB output in release builds
+if(${_DEBUG} STREQUAL "0")
+    pico_enable_stdio_uart(${PROJECT_NAME} 0)
+else()
+    pico_enable_stdio_uart(${PROJECT_NAME} 1)
 endif()
 
 # Print the variables on screen

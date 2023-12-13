@@ -9,6 +9,7 @@ static ConfigEntry defaultEntries[MAX_ENTRIES] = {
     {"FLOPPY_DB_URL", TYPE_STRING, "http://ataristdb.sidecart.xyz"},
     {"FLOPPY_IMAGE_A", TYPE_STRING, ""},
     {"FLOPPY_IMAGE_B", TYPE_STRING, ""},
+    {"GEMDRIVE_FOLDERS", TYPE_STRING, "/hd"},
     {"HOSTNAME", TYPE_STRING, "sidecart"},
     {"LASTEST_RELEASE_URL", TYPE_STRING, LATEST_RELEASE_URL},
     {"ROMS_FOLDER", TYPE_STRING, "/roms"},
@@ -443,4 +444,20 @@ int erase_firmware_from_RAM()
     }
     DPRINTF("RAM for the firmware zeroed.\n");
     return 0;
+}
+
+void blink_error()
+{
+    // If we are here, something went wrong. Flash 'E' in morse code until pressed SELECT or RESET.
+    while (1)
+    {
+        blink_morse('E');
+        sleep_ms(1000);
+        // If SELECT button is pressed, launch the configurator
+        if (gpio_get(5) != 0)
+        {
+            // Ignore safe reboot here
+            select_button_action(false, true);
+        }
+    }
 }
