@@ -10,6 +10,11 @@ static ConfigEntry defaultEntries[MAX_ENTRIES] = {
     {PARAM_FLOPPY_DB_URL, TYPE_STRING, "http://ataristdb.sidecartridge.com"},
     {"FLOPPY_IMAGE_A", TYPE_STRING, ""},
     {"FLOPPY_IMAGE_B", TYPE_STRING, ""},
+    {PARAM_GEMDRIVE_BUFF_TYPE, TYPE_INT, "0"},
+    {PARAM_GEMDRIVE_DRIVE, TYPE_STRING, "C"},
+    {PARAM_GEMDRIVE_FOLDERS, TYPE_STRING, "/hd"},
+    {PARAM_GEMDRIVE_RTC, TYPE_BOOL, "true"},
+    {PARAM_GEMDRIVE_TIMEOUT_SEC, TYPE_INT, "45"},
     {"HOSTNAME", TYPE_STRING, "sidecart"},
     {PARAM_LASTEST_RELEASE_URL, TYPE_STRING, LATEST_RELEASE_URL},
     {PARAM_MENU_REFRESH_SEC, TYPE_INT, "3"},
@@ -488,4 +493,33 @@ void blink_error()
             select_button_action(false, true);
         }
     }
+}
+
+// Don't forget to free the returned string after use!
+char *bin_2_str(int number)
+{
+    int numBits = sizeof(number) * 8;
+    char *binaryStr = malloc(numBits + 1); // Allocate memory for the binary string plus the null terminator
+    if (binaryStr == NULL)
+    {
+        return NULL; // Return NULL if memory allocation fails
+    }
+
+    unsigned int mask = 1 << (numBits - 1);
+    for (int i = 0; i < numBits; i++)
+    {
+        binaryStr[i] = (number & mask) ? '1' : '0'; // Use bitwise AND to check if the current bit is 1 or 0 and store in the string
+        mask >>= 1;                                 // Shift the mask one bit to the right
+    }
+    binaryStr[numBits] = '\0'; // Null-terminate the string
+
+    return binaryStr;
+}
+
+// Change endianess of a 32 bit value by swapping the words in the longword in memory
+void set_and_swap_longword(uint32_t memory_address, uint32_t longword_value)
+{
+    uint16_t *address = (uint16_t *)(memory_address);
+    address[0] = (longword_value >> 16) & 0xFFFF; // Most significant 16 bits
+    address[1] = longword_value & 0xFFFF;         // Least significant 16 bit
 }

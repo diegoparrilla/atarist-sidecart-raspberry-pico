@@ -25,11 +25,16 @@
 #include "include/network.h"
 
 // sync values here as well : atarist-sidecart-firmware/configurator/src/include/config.h
-#define MAX_ENTRIES 23
+#define MAX_ENTRIES 27
 #define MAX_KEY_LENGTH 20
 #define MAX_STRING_VALUE_LENGTH 64
 
 #define PARAM_DOWNLOAD_TIMEOUT_SEC "DOWNLOAD_TIMEOUT_SEC"
+#define PARAM_GEMDRIVE_BUFF_TYPE "GEMDRIVE_BUFF_TYPE"
+#define PARAM_GEMDRIVE_DRIVE "GEMDRIVE_DRIVE"
+#define PARAM_GEMDRIVE_FOLDERS "GEMDRIVE_FOLDERS"
+#define PARAM_GEMDRIVE_RTC "GEMDRIVE_RTC"
+#define PARAM_GEMDRIVE_TIMEOUT_SEC "GEMDRIVE_TIMEOUT_SEC"
 #define PARAM_FLOPPY_DB_URL "FLOPPY_DB_URL"
 #define PARAM_LASTEST_RELEASE_URL "LASTEST_RELEASE_URL"
 #define PARAM_MENU_REFRESH_SEC "MENU_REFRESH_SEC"
@@ -97,6 +102,10 @@ int copy_firmware_to_RAM(uint16_t *emulROM, int emulROM_length);
 int erase_firmware_from_RAM();
 
 void blink_error();
+
+char *bin_2_str(int number);
+
+void set_and_swap_longword(uint32_t memory_address, uint32_t longword_value);
 
 // int remove_entry(const char *key);
 
